@@ -50,7 +50,7 @@ func GenBo_Mysql(dsn string, tables []string, boDir string, poPath string) error
 		}
 
 		// 从 embed.FS 读取模板内容
-		tplContent, err := boTplFS.ReadFile("model/bo/bo.tpl") // 路径相对于 //go:embed
+		tplContent, err := boTplFS.ReadFile("bo.tpl") // 路径相对于 //go:embed
 		if err != nil {
 			return fmt.Errorf("failed to read embedded template: %v", err)
 		}
