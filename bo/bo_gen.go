@@ -2,12 +2,17 @@ package bo
 
 import (
 	"database/sql"
-	"os"
-	"path/filepath"
+	"embed"
+	"fmt"
+
+	_ "embed"
 
 	"gitee.com/go-framework_llllllh/go-backnormal-gen/util"
 	_ "github.com/go-sql-driver/mysql" // 或其他数据库驱动
 )
+
+//go:embed bo.tpl
+var boTplFS embed.FS // 嵌入整个目录或单个文件
 
 func GenBo_Mysql(dsn string, tables []string, boDir string, poPath string) error {
 	// 1. 连接数据库
@@ -44,15 +49,15 @@ func GenBo_Mysql(dsn string, tables []string, boDir string, poPath string) error
 			return err
 		}
 
+		// 从 embed.FS 读取模板内容
+		tplContent, err := boTplFS.ReadFile("model/bo/bo.tpl") // 路径相对于 //go:embed
+		if err != nil {
+			return fmt.Errorf("failed to read embedded template: %v", err)
+		}
+
 		// 4. 生成 Bo 文件
 		// 获取本文件所在目录
-		boDir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-		if err != nil {
-			return err
-		}
-		// tplPath
-		tplPath := filepath.Join(boDir, "bo.tpl")
-		if err := util.Generate(model, tplPath, boDir); err != nil {
+		if err := util.GenerateFromBytes(model, tplContent, boDir); err != nil {
 			return err
 		}
 	}

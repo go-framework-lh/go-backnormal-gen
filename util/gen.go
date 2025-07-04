@@ -1,6 +1,7 @@
 package util
 
 import (
+	"bytes"
 	"database/sql"
 	"fmt"
 	"html/template"
@@ -105,6 +106,34 @@ func Generate(model Model, tplPath string, daoDir string) error {
 
 	// 8. 执行模板渲染
 	return tpl.Execute(file, model)
+}
+
+// GenerateFromBytes 从字节生成文件（替代原来的从文件路径生成）
+func GenerateFromBytes(model Model, tplContent []byte, outputDir string) error {
+	// 解析模板
+	tpl, err := template.New("bo").Parse(string(tplContent))
+	if err != nil {
+		return fmt.Errorf("failed to parse template: %v", err)
+	}
+
+	// 渲染模板到缓冲区
+	var buf bytes.Buffer
+	if err := tpl.Execute(&buf, model); err != nil {
+		return fmt.Errorf("failed to execute template: %v", err)
+	}
+
+	// 确保输出目录存在
+	if err := os.MkdirAll(outputDir, 0755); err != nil {
+		return fmt.Errorf("failed to create directory: %v", err)
+	}
+
+	// 写入文件
+	outputPath := filepath.Join(outputDir, fmt.Sprintf("%s.gen.go", model.ModelName))
+	if err := os.WriteFile(outputPath, buf.Bytes(), 0644); err != nil {
+		return fmt.Errorf("failed to write file: %v", err)
+	}
+
+	return nil
 }
 
 // 获取模板路径 同目录下的bo.tpl
