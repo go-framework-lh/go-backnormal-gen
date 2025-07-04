@@ -2,6 +2,8 @@ package bo
 
 import (
 	"database/sql"
+	"os"
+	"path/filepath"
 
 	"gitee.com/go-framework_llllllh/go-backnormal-gen/util"
 	_ "github.com/go-sql-driver/mysql" // 或其他数据库驱动
@@ -43,7 +45,13 @@ func GenBo_Mysql(dsn string, tables []string, boDir string, poPath string) error
 		}
 
 		// 4. 生成 Bo 文件
-		tplPath := "./bo.tpl"
+		// 获取本文件所在目录
+		boDir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+		if err != nil {
+			return err
+		}
+		// tplPath
+		tplPath := filepath.Join(boDir, "bo.tpl")
 		if err := util.Generate(model, tplPath, boDir); err != nil {
 			return err
 		}
