@@ -2,12 +2,18 @@ package dao
 
 import (
 	"database/sql"
+	"embed"
+	_ "embed"
+	"fmt"
 
 	"gitee.com/go-framework_llllllh/go-backnormal-gen/util"
 	_ "github.com/go-sql-driver/mysql" // 或其他数据库驱动
 )
 
-func GenDao_Mysql(dsn string, tables []string, DaoDir string, boPath string) error {
+//go:embed dao.tpl
+var daoTplFS embed.FS // 嵌入整个目录或单个文件
+
+func GenDao_Mysql(dsn string, tables []string, daoDir string, boPath string) error {
 	// 1. 连接数据库
 	//dsn: "root:123456@tcp(127.0.0.1:3306)/test?charset=utf8mb4&parseTime=True&loc=Local"
 	db, err := sql.Open("mysql", dsn)
@@ -42,9 +48,15 @@ func GenDao_Mysql(dsn string, tables []string, DaoDir string, boPath string) err
 			return err
 		}
 
-		// 4. 生成 Dao 文件
-		tplPath := "./dao.tpl"
-		if err := util.Generate(model, tplPath, DaoDir); err != nil {
+		// 从 embed.FS 读取模板内容
+		tplContent, err := daoTplFS.ReadFile("bo.tpl") // 路径相对于 //go:embed
+		if err != nil {
+			return fmt.Errorf("failed to read embedded template: %v", err)
+		}
+
+		// 4. 生成 Bo 文件
+		// 获取本文件所在目录
+		if err := util.GenerateFromBytes(model, tplContent, daoDir); err != nil {
 			return err
 		}
 	}
