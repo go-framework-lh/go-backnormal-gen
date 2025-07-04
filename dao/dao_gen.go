@@ -49,7 +49,7 @@ func GenDao_Mysql(dsn string, tables []string, daoDir string, boPath string) err
 		}
 
 		// 从 embed.FS 读取模板内容
-		tplContent, err := daoTplFS.ReadFile("bo.tpl") // 路径相对于 //go:embed
+		tplContent, err := daoTplFS.ReadFile("dao.tpl") // 路径相对于 //go:embed
 		if err != nil {
 			return fmt.Errorf("failed to read embedded template: %v", err)
 		}
