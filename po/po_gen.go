@@ -1,7 +1,7 @@
 package po
 
 import (
-	"gitee.com/go-framework_llllllh/go-backnormal-gen/util"
+	"github.com/go-framework-lh/go-backnormal-gen/util"
 	"gorm.io/driver/mysql"
 	"gorm.io/gen"
 	"gorm.io/gorm"

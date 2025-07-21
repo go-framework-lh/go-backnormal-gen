@@ -1,4 +1,4 @@
-module gitee.com/go-framework_llllllh/go-backnormal-gen
+module github.com/go-framework-lh/go-backnormal-gen
 
 go 1.21.12
 

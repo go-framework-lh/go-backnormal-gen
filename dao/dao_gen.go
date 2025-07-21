@@ -6,7 +6,7 @@ import (
 	_ "embed"
 	"fmt"
 
-	"gitee.com/go-framework_llllllh/go-backnormal-gen/util"
+	"github.com/go-framework-lh/go-backnormal-gen/util"
 	_ "github.com/go-sql-driver/mysql" // 或其他数据库驱动
 )
 
