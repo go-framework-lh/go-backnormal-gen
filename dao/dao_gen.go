@@ -54,9 +54,9 @@ func GenDao_Mysql(dsn string, tables []string, daoDir string, boPath string) err
 			return fmt.Errorf("failed to read embedded template: %v", err)
 		}
 
-		// 4. 生成 Bo 文件
+		// 4. 生成 Dao 文件
 		// 获取本文件所在目录
-		if err := util.GenerateFromBytes(model, tplContent, daoDir); err != nil {
+		if err := util.GenerateFromBytes_dao(model, tplContent, daoDir); err != nil {
 			return err
 		}
 	}

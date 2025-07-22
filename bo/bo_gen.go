@@ -57,7 +57,7 @@ func GenBo_Mysql(dsn string, tables []string, boDir string, poPath string) error
 
 		// 4. 生成 Bo 文件
 		// 获取本文件所在目录
-		if err := util.GenerateFromBytes(model, tplContent, boDir); err != nil {
+		if err := util.GenerateFromBytes_bo(model, tplContent, boDir); err != nil {
 			return err
 		}
 	}

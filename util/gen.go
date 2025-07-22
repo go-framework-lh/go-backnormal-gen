@@ -108,8 +108,8 @@ func Generate(model Model, tplPath string, daoDir string) error {
 	return tpl.Execute(file, model)
 }
 
-// GenerateFromBytes 从字节生成文件（替代原来的从文件路径生成）
-func GenerateFromBytes(model Model, tplContent []byte, outputDir string) error {
+// GenerateFromBytes_dao 从字节生成文件（替代原来的从文件路径生成）
+func GenerateFromBytes_dao(model Model, tplContent []byte, outputDir string) error {
 	// 解析模板
 	tpl, err := template.New("bo").Parse(string(tplContent))
 	if err != nil {
@@ -128,7 +128,41 @@ func GenerateFromBytes(model Model, tplContent []byte, outputDir string) error {
 	}
 
 	// 写入文件
-	outputPath := filepath.Join(outputDir, fmt.Sprintf("%s.gen.go", model.ModelName))
+	// 文件名处理：BizConfins.gen.go -> bizConfinsDao.gen.go
+	// 首字母小写，其余驼峰。表名后加Dao
+	modelName := ToCamelCase2(model.ModelName) + "Dao"
+	outputPath := filepath.Join(outputDir, fmt.Sprintf("%s.gen.go", modelName))
+	if err := os.WriteFile(outputPath, buf.Bytes(), 0644); err != nil {
+		return fmt.Errorf("failed to write file: %v", err)
+	}
+
+	return nil
+}
+
+// GenerateFromBytes_bo 从字节生成文件（替代原来的从文件路径生成）
+func GenerateFromBytes_bo(model Model, tplContent []byte, outputDir string) error {
+	// 解析模板
+	tpl, err := template.New("bo").Parse(string(tplContent))
+	if err != nil {
+		return fmt.Errorf("failed to parse template: %v", err)
+	}
+
+	// 渲染模板到缓冲区
+	var buf bytes.Buffer
+	if err := tpl.Execute(&buf, model); err != nil {
+		return fmt.Errorf("failed to execute template: %v", err)
+	}
+
+	// 确保输出目录存在
+	if err := os.MkdirAll(outputDir, 0755); err != nil {
+		return fmt.Errorf("failed to create directory: %v", err)
+	}
+
+	// 写入文件
+	// 文件名处理：BizConfins.gen.go -> bizConfinsBo.gen.go
+	// 首字母小写，其余驼峰。表名后加Dao
+	modelName := ToCamelCase2(model.ModelName) + "Bo"
+	outputPath := filepath.Join(outputDir, fmt.Sprintf("%s.gen.go", modelName))
 	if err := os.WriteFile(outputPath, buf.Bytes(), 0644); err != nil {
 		return fmt.Errorf("failed to write file: %v", err)
 	}
